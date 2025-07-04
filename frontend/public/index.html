@@ -4,6 +4,12 @@
   <head>
     <meta charset="utf-8">
     <title>LovePi</title> 
+    <script>
+      window.__PI_SANDBOX__ = true;
+      window.__ENV = {
+        backendURL: "https://lovepi-backend.onrender.com"
+      };
+    </script>
     <!-- 1) Charge le SDK Pi -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     <!-- 2) Initialise le SDK (sandbox actif) -->
