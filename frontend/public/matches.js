@@ -1,48 +1,43 @@
+// matches.js
+window.__PI_SANDBOX__ = true;
+
+let currentUser = null;
+
 window.onload = async () => {
   if (!window.Pi) {
-    alert("This page must be opened in Pi Browser.");
+    alert("Please open this in Pi Browser.");
     return;
   }
 
-  window.Pi.authenticate(['username'],{ sandbox: true }, async function (auth) {
-    const currentUser = auth.user.username;
-    const matchRes = await fetch(`http://77.132.100.12/api/matches/${currentUser}`);
-    const matchList = await matchRes.json(); // array of usernames
-
-    const profileRes = await fetch("http://l77.132.100.12/api/all_profiles");
-    const allProfiles = await profileRes.json();
-
-    const listDiv = document.getElementById("matches-list");
-    listDiv.innerHTML = ""; // Clear loading
-
-    if (matchList.length === 0) {
-      listDiv.innerHTML = "<p>You have no matches yet 😢</p>";
-      return;
-    }
-
-    matchList.forEach(username => {
-      const p = allProfiles[username];
-      if (!p) return;
-
-      const card = document.createElement("div");
-      card.className = "match-card";
-
-      const img = document.createElement("img");
-      img.src = p.photo || "https://via.placeholder.com/80";
-      card.appendChild(img);
-
-      const info = document.createElement("div");
-      info.className = "match-info";
-      info.innerHTML = `
-        <strong>${username}</strong><br>
-        Age: ${p.age || "?"}<br>
-        Gender: ${p.gender || "?"}<br>
-        <em>${p.bio || ""}</em><br>
-        <button onclick="window.location.href='chat.html?with=${username}'">💬 Chat</button>
-      `;
-      card.appendChild(info);
-
-      listDiv.appendChild(card);
-    });
+  window.Pi.authenticate(['username'], async function (auth) {
+    currentUser = auth.user.username;
+    loadMatches();
   });
 };
+
+async function loadMatches() {
+  const res = await fetch(`https://lovepi-backend.onrender.com/api/matches/${currentUser}`);
+  const matches = await res.json();
+
+  const list = document.getElementById("matches-list");
+  list.innerHTML = "";
+
+  if (!matches || matches.length === 0) {
+    list.innerHTML = "<p>You have no matches yet.</p>";
+    return;
+  }
+
+  matches.forEach(match => {
+    const div = document.createElement("div");
+    div.className = "match-card";
+    div.innerHTML = `
+      <strong>${match}</strong><br>
+    `;
+    // Optionally fetch full profile if needed, or use /api/all_profiles
+    const chatBtn = document.createElement("button");
+    chatBtn.textContent = "💬 Chat";
+    chatBtn.onclick = () => window.location.href = `chat.html?with=${match}`;
+    div.appendChild(chatBtn);
+    list.appendChild(div);
+  });
+}
