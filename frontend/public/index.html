@@ -1,14 +1,15 @@
-<body>
-  <h1>Loading Pi SDK…</h1>
-  <script>
-    window.__PI_SANDBOX__ = true;
-    console.log("Before Pi.authenticate, Pi:", window.Pi);
-    if (!window.Pi) {
-      document.body.innerHTML += "<p>Pi SDK not found.</p>";
-    } else {
-      window.Pi.authenticate(['username'], function(auth){
-        document.body.innerHTML += "<p>Logged as " + auth.user.username + "</p>";
-      });
-    }
-  </script>
-</body>
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Pi Love</title>
+    <!-- Activate Pi sandbox before loading app.js -->
+    <script>window.__PI_SANDBOX__ = true;</script>
+  </head>
+  <body>
+    <h1>Loading Pi SDK…</h1>
+    <!-- Single JS entrypoint -->
+    <script src="app.js"></script>
+  </body>
+</html>
