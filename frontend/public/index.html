@@ -1,25 +1,31 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>LovePi</title> 
+    <title>LovePi</title> <!-- 1) Active le sandbox et configure le backend -->
     <script>
       window.__PI_SANDBOX__ = true;
       window.__ENV = {
         backendURL: "https://lovepi-backend.onrender.com"
       };
     </script>
-    <!-- 1) Charge le SDK Pi -->
+    <!-- 2) Charge le Pi SDK -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-    <!-- 2) Initialise le SDK (sandbox actif) -->
-    <script>Pi.init({version: "2.0"});</script>
-    <!-- 3) Ton CSS, puis ton propre code JS -->
+    <!-- 3) Initialise le SDK en mode sandbox -->
+    <script>
+      Pi.init({
+        version: "2.0",
+        sandbox: true
+      });
+    </script>
+    <!-- 4) Charge le client Socket.IO pour le chat -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- 5) Ton CSS -->
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <h1>Loading Pi SDK…</h1>
-    <!-- Single JS entrypoint -->
+    <h1>Loading LovePi…</h1>
+     <!-- 6) Point d’entrée applicatif unique -->
     <script src="app.js"></script>
   </body>
 </html>
