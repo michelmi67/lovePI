@@ -1,3 +1,5 @@
+window.__PI_SANDBOX__ = true;
+
 let currentUser = null;
 let otherProfiles = [];
 let currentIndex = 0;
