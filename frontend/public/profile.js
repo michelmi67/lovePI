@@ -1,3 +1,6 @@
+// profile.js
+window.__PI_SANDBOX__ = true;
+
 let username = null;
 
 window.addEventListener("load", () => {
@@ -6,24 +9,20 @@ window.addEventListener("load", () => {
     return;
   }
 
-  window.Pi.authenticate(['username'],{ sandbox: true }, function (auth) {
+  window.Pi.authenticate(['username'], function (auth) {
     username = auth.user.username;
     document.getElementById("username").textContent = username;
     loadProfile();
   });
 
-  // Prévisualisation de l'image
   document.getElementById("photoInput").addEventListener("change", function () {
     const file = this.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function (e) {
       const preview = document.getElementById("preview");
       preview.src = e.target.result;
       preview.style.display = "block";
-
-      // Stocker la photo encodée
       window.base64Photo = e.target.result;
     };
     reader.readAsDataURL(file);
@@ -31,7 +30,7 @@ window.addEventListener("load", () => {
 });
 
 function loadProfile() {
-  fetch(`http://77.132.100.12/api/profile/${username}`)
+  fetch(`https://lovepi-backend.onrender.com/api/profile/${username}`)
     .then(res => res.json())
     .then(data => {
       document.getElementById("bio").value = data.bio || "";
@@ -53,16 +52,10 @@ async function submitProfile() {
   const bio = document.getElementById("bio").value;
   const photo = window.base64Photo || "";
 
-  const res = await fetch("http://77.132.100.12/api/profile", {
+  const res = await fetch("https://lovepi-backend.onrender.com/api/save_profile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username,
-      age,
-      gender,
-      bio,
-      photo
-    })
+    body: JSON.stringify({ username, age, gender, bio, photo })
   });
 
   if (res.ok) {
