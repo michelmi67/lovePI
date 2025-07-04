@@ -38,7 +38,7 @@ window.onload = () => {
         // --------------------------------------
         // Check if user has a profile
         try {
-          const resp = await fetch(`${API_BASE_URL}/api/profile/${currentUser}`);
+          const resp = await fetch(`${window.__ENV.backendURL}/api/profile/${currentUser}`);
           const data = await resp.json();
           if (!data.bio) {
             window.location.href = "profile.html";
