@@ -1,10 +1,13 @@
 // app.js
-// =========
 // Single master script for all pages (index, profile, explore, matches, chat)
 
 ///////////////////////////////////////////
 // CONFIGURATION
 ///////////////////////////////////////////
+window.__PI_SANDBOX__ = true;
+window.__ENV = {
+  backendURL: "https://lovepi-backend.onrender.com"
+};
 const API_BASE_URL = window.__ENV.backendURL;
 
 ///////////////////////////////////////////
@@ -18,7 +21,7 @@ let socket = null;
 ///////////////////////////////////////////
 // BOOTSTRAP: Authenticate & route
 ///////////////////////////////////////////
-window.onload = () => {
+window.addEventListener("load", () => {
   // Ensure Pi Browser SDK is available
   if (!window.Pi) {
     alert("⚠️ Veuillez ouvrir cette page dans Pi Browser.");
@@ -33,51 +36,50 @@ window.onload = () => {
       currentUser = auth.user.username;
       const path = window.location.pathname.toLowerCase();
 
-      if (path.endsWith("index.html") || path.endsWith("/") || path === "") {
-        // INDEX PAGE: check profile and redirect
-        // --------------------------------------
-        // Check if user has a profile
-        try {
-          const resp = await fetch(`${window.__ENV.backendURL}/api/profile/${currentUser}`);
-          const data = await resp.json();
-          if (!data.bio) {
-            window.location.href = "profile.html";
-          } else {
-            window.location.href = "explore.html";
-          }
-        } catch (e) {
-          console.error("Backend error:", e);
-          document.body.innerHTML += "<p style='color:red;'>Erreur de connexion au backend.</p>";
-        }
-      }
-      else if (path.endsWith("profile.html")) {
+      if (path.endsWith("index.html") || path === "/" || path === "") {
+        await handleIndexPage();
+      } else if (path.endsWith("profile.html")) {
         initProfilePage();
-      }
-      else if (path.endsWith("explore.html")) {
+      } else if (path.endsWith("explore.html")) {
         initExplorePage();
-      }
-      else if (path.endsWith("matches.html")) {
+      } else if (path.endsWith("matches.html")) {
         initMatchesPage();
-      }
-      else if (path.endsWith("chat.html")) {
+      } else if (path.endsWith("chat.html")) {
         initChatPage();
-      }
-      else {
+      } else {
         console.warn("No init for this path:", path);
       }
     }
   );
-};
+});
+
+///////////////////////////////////////////
+// INDEX PAGE LOGIC
+///////////////////////////////////////////
+async function handleIndexPage() {
+  try {
+    const resp = await fetch(`${API_BASE_URL}/api/profile/${currentUser}`);
+    if (!resp.ok) throw new Error(`Status ${resp.status}`);
+    const data = await resp.json();
+    if (!data.bio) {
+      window.location.href = "profile.html";
+    } else {
+      window.location.href = "explore.html";
+    }
+  } catch (e) {
+    console.error("Backend error:", e);
+    document.body.innerHTML += "<p style='color:red;'>Erreur de connexion au backend.</p>";
+  }
+}
 
 ///////////////////////////////////////////
 // PROFILE PAGE
 ///////////////////////////////////////////
 function initProfilePage() {
   document.getElementById("username").textContent = currentUser;
-
-  // Photo input → preview
   const photoInput = document.getElementById("photoInput");
   const previewImg = document.getElementById("preview");
+
   photoInput.addEventListener("change", function () {
     const file = this.files[0];
     if (!file) return;
@@ -90,13 +92,13 @@ function initProfilePage() {
     reader.readAsDataURL(file);
   });
 
-  // Load profile data
+  // Load existing profile
   fetch(`${API_BASE_URL}/api/profile/${currentUser}`)
     .then(r => r.json())
     .then(data => {
-      document.getElementById("age").value    = data.age    || "";
+      document.getElementById("age").value = data.age || "";
       document.getElementById("gender").value = data.gender || "";
-      document.getElementById("bio").value    = data.bio    || "";
+      document.getElementById("bio").value = data.bio || "";
       if (data.photo) {
         previewImg.src = data.photo;
         previewImg.style.display = "block";
@@ -104,12 +106,11 @@ function initProfilePage() {
       }
     });
 
-  // Save button
-  document.getElementById("saveProfileBtn").onclick = async () => {
-    const age    = document.getElementById("age").value;
+  document.getElementById("saveProfileBtn").addEventListener("click", async () => {
+    const age = document.getElementById("age").value;
     const gender = document.getElementById("gender").value;
-    const bio    = document.getElementById("bio").value;
-    const photo  = window.base64Photo || "";
+    const bio = document.getElementById("bio").value;
+    const photo = window.base64Photo || "";
 
     const res = await fetch(`${API_BASE_URL}/api/save_profile`, {
       method: "POST",
@@ -117,26 +118,23 @@ function initProfilePage() {
       body: JSON.stringify({ username: currentUser, age, gender, bio, photo })
     });
     if (res.ok) {
-      alert("✅ Profil enregistré ! Redirection vers Explore…");
+      alert("✅ Profil enregistré !");
       window.location.href = "explore.html";
     } else {
       alert("❌ Échec de l'enregistrement.");
     }
-  };
+  });
 }
 
 ///////////////////////////////////////////
 // EXPLORE PAGE
 ///////////////////////////////////////////
 async function initExplorePage() {
-  // Fetch all profiles
   const resAll = await fetch(`${API_BASE_URL}/api/all_profiles`);
   const all = await resAll.json();
   otherProfiles = Object.entries(all)
     .filter(([u]) => u !== currentUser)
     .map(([u, d]) => ({ username: u, ...d }));
-
-  // Navigation buttons
   const btnContainer = document.querySelector(".buttons");
   btnContainer.innerHTML = `
     <button id="likeBtn">❤️ Like</button>
@@ -144,11 +142,10 @@ async function initExplorePage() {
     <button id="matchesBtn">💘 My Matches</button>
     <button id="chatsBtn">💬 My Chats</button>
   `;
-  document.getElementById("likeBtn").onclick    = likeProfile;
-  document.getElementById("skipBtn").onclick    = skipProfile;
-  document.getElementById("matchesBtn").onclick = () => window.location.href="matches.html";
-  document.getElementById("chatsBtn").onclick   = () => window.location.href="chat-list.html";
-
+  document.getElementById("likeBtn").onclick = likeProfile;
+  document.getElementById("skipBtn").onclick = skipProfile;
+  document.getElementById("matchesBtn").onclick = () => window.location.href = "matches.html";
+  document.getElementById("chatsBtn").onclick = () => window.location.href = "chat-list.html";
   showNextProfile();
 }
 
@@ -159,9 +156,9 @@ function showNextProfile() {
   }
   const p = otherProfiles[currentIndex];
   document.getElementById("username").textContent = p.username;
-  document.getElementById("age").textContent      = p.age    || "N/A";
-  document.getElementById("gender").textContent   = p.gender || "N/A";
-  document.getElementById("bio").textContent      = p.bio    || "N/A";
+  document.getElementById("age").textContent = p.age || "N/A";
+  document.getElementById("gender").textContent = p.gender || "N/A";
+  document.getElementById("bio").textContent = p.bio || "N/A";
   const photoEl = document.getElementById("photo");
   if (p.photo) {
     photoEl.src = p.photo;
@@ -180,7 +177,9 @@ async function likeProfile() {
     body: JSON.stringify({ from: currentUser, to: p.username })
   });
   const { match } = await res.json();
-  alert(match ? `🎉 C'est un match avec ${p.username} !` : `Vous avez liké ${p.username}`);
+  alert(match
+    ? `🎉 C'est un match avec ${p.username} !`
+    : `Vous avez liké ${p.username}`);
   currentIndex++;
   showNextProfile();
 }
@@ -198,12 +197,10 @@ async function initMatchesPage() {
   const matches = await res.json();
   const listDiv = document.getElementById("matches-list");
   listDiv.innerHTML = "";
-
   if (!matches.length) {
     listDiv.innerHTML = "<p>Vous n'avez pas encore de matchs.</p>";
     return;
   }
-
   matches.forEach(u => {
     const card = document.createElement("div");
     card.className = "match-card";
@@ -211,14 +208,14 @@ async function initMatchesPage() {
       <strong>${u}</strong><br>
       <button class="chatBtn">💬 Chat</button>
     `;
-    card.querySelector(".chatBtn").onclick = () => 
+    card.querySelector(".chatBtn").onclick = () =>
       window.location.href = `chat.html?with=${u}`;
     listDiv.appendChild(card);
   });
 }
 
 ///////////////////////////////////////////
-// CHAT PAGE
+// CHAT PAGE (Socket.IO)
 ///////////////////////////////////////////
 function initChatPage() {
   socket = io(API_BASE_URL);
@@ -248,6 +245,6 @@ function initChatPage() {
 }
 
 function scrollToBottom() {
-  const c = document.getElementById("messages");
-  c.scrollTop = c.scrollHeight;
+  const container = document.getElementById("messages");
+  container.scrollTop = container.scrollHeight;
 }
