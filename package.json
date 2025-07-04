@@ -1,0 +1,17 @@
+{
+  "name": "pilove-app",
+  "version": "1.0.0",
+  "description": "Application de rencontre gratuite pour Pi Network avec dons",
+  "scripts": {
+    "start-frontend": "cd frontend && npm start",
+    "start-backend": "cd backend && node server.js"
+  },
+  "author": "Michel Lechevrel",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

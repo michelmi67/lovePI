@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>My Profile</title>
+        <link rel="stylesheet" href="profile.css">
+    </head>
+    <body>
+        <div class="container">
+            <h2>My Profile</h2>
+            <p><strong>Pi user:</strong> <span id="username">...</span></p>
+            <label>Age:</label>
+            <input type="number" id="age" min="18" max="99">
+            <label>Gender:</label>
+            <select id="gender">
+                <option value="">-- Choose --</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+            </select>
+            <label>Bio:</label>
+            <textarea id="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+            <label>Photo:</label>
+            <input type="file" accept="image/*" capture="environment" id="photoInput"><br>
+            <img id="preview" src="" alt="Preview" width="150" style="display: none;"><br>
+            <button onclick="submitProfile()">Save Profile</button>
+        </div>
+        <script src="profile.js"></script>
+    </body>
+</html>

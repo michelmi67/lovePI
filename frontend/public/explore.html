@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Explore</title>
+    <link rel="stylesheet" href="explore.css">
+    </head>
+    <body>
+    <div class="container">
+        <h2>Explore Profiles</h2>
+        <div id="profile-container">
+        <p><strong>Username:</strong> <span id="username"></span></p>
+        <img id="photo" src="" alt="Profile photo" style="display: none;" width="150">
+        <p><strong>Age:</strong> <span id="age"></span></p>
+        <p><strong>Gender:</strong> <span id="gender"></span></p>
+        <p><strong>Bio:</strong> <span id="bio"></span></p>
+        <div class="buttons">
+            <button onclick="likeProfile()">❤️ Like</button>
+            <button onclick="skipProfile()">Skip ➡️</button>
+        </div>
+        </div>
+    </div>
+    <script src="explore.js"></script>
+    </body>
+</html>
