@@ -1,3 +1,6 @@
+// explore.js
+window.__PI_SANDBOX__ = true;
+
 let currentUser = null;
 let otherProfiles = [];
 let currentIndex = 0;
@@ -8,24 +11,14 @@ window.onload = async () => {
     return;
   }
 
-  window.Pi.authenticate(['username'],{ sandbox: true }, async function (auth) {
+  window.Pi.authenticate(['username'], async function (auth) {
     currentUser = auth.user.username;
 
-    // Charger tous les profils
-    const res = await fetch("http://77.132.100.12/api/all_profiles");
+    // Charge tous les profils depuis le backend Render
+    const res = await fetch("https://lovepi-backend.onrender.com/api/all_profiles");
     const all = await res.json();
 
-    // Vérifier si l'utilisateur a un profil
-    if (!all[currentUser]) {
-      // Redirection si le profil n'existe pas
-      window.location.href = "profile.html";
-      return;
-    }
-
-    // Ajouter les boutons "Mes matchs" et "Mes chats"
-    addNavigationButtons();
-
-    // Filtrer tous les autres profils
+    // Exclut l'utilisateur courant
     otherProfiles = Object.entries(all)
       .filter(([username]) => username !== currentUser)
       .map(([username, data]) => ({ username, ...data }));
@@ -33,27 +26,6 @@ window.onload = async () => {
     showNextProfile();
   });
 };
-
-function addNavigationButtons() {
-  const container = document.querySelector(".container");
-
-  const navDiv = document.createElement("div");
-  navDiv.style.marginBottom = "20px";
-
-  const matchBtn = document.createElement("button");
-  matchBtn.textContent = "💘 My Matches";
-  matchBtn.onclick = () => window.location.href = "matches.html";
-
-  const chatBtn = document.createElement("button");
-  chatBtn.textContent = "💬 My Chats";
-  chatBtn.onclick = () => window.location.href = "chat-list.html";
-
-  matchBtn.style.marginRight = "10px";
-
-  navDiv.appendChild(matchBtn);
-  navDiv.appendChild(chatBtn);
-  container.prepend(navDiv);
-}
 
 function showNextProfile() {
   const profile = otherProfiles[currentIndex];
@@ -79,14 +51,13 @@ function showNextProfile() {
 async function likeProfile() {
   const likedUser = otherProfiles[currentIndex].username;
 
-  const res = await fetch("http://77.132.100.12/api/like", {
+  const res = await fetch("https://lovepi-backend.onrender.com/api/like", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ from: currentUser, to: likedUser })
   });
 
   const result = await res.json();
-
   if (result.match) {
     alert("🎉 It's a match with " + likedUser + "!");
   } else {
@@ -98,7 +69,6 @@ async function likeProfile() {
 }
 
 function skipProfile() {
-  if (currentIndex >= otherProfiles.length) return;
   currentIndex++;
   showNextProfile();
 }
