@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Pi SDK Check</title>
-  <script>window.__PI_SANDBOX__ = true;</script>
-</head>
-<body>
-  <h1>🔍 Checking Pi SDK</h1>
-  <script>
-    console.log("window.Pi is", window.Pi);
-    document.body.innerHTML += `<pre>window.Pi = ${window.Pi ? "✅ defined" : "❌ undefined"}</pre>`;
-    if (window.Pi) {
-      window.Pi.authenticate(
-        ["username"],
-        { sandbox: true },
-        auth => document.body.innerHTML += `<p>✅ Authenticated as ${auth.user.username}</p>`,
-        err  => document.body.innerHTML += `<p style="color:red">❌ Auth error: ${err.message}</p>`
-      );
-    }
-  </script>
-</body>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>LovePi</title>
+    <script>
+    window.__ENV = {
+      backendURL: "%REACT_APP_BACKEND_URL%",
+      sandbox: "%REACT_APP_SANDBOX_SDK%"
+    };
+    <!-- 1) Charge le SDK Pi -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <!-- 2) Initialise le SDK (sandbox actif) -->
+    <script>Pi.init({version: "2.0"});</script>
+    <!-- 3) Ton CSS, puis ton propre code JS -->
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <h1>Loading Pi SDK…</h1>
+    <!-- Single JS entrypoint -->
+    <script src="app.js"></script>
+  </body>
 </html>
