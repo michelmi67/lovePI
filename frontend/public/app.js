@@ -261,3 +261,17 @@ function scrollToBottom() {
   const container = document.getElementById("messages");
   container.scrollTop = container.scrollHeight;
 }
+
+function testPayment() {
+  if (!window.Pi) return alert("Pi SDK non dispo");
+  window.Pi.createPayment({
+    amount: 0.01,
+    memo: "Test Pi",
+    metadata: { step: "final" }
+  }, {
+    onReadyForServerApproval(paymentId) { alert("Server approval: " + paymentId); },
+    onReadyForServerCompletion(paymentId, txid) { alert("Terminé! " + paymentId); },
+    onCancel(paymentId) { alert("Annulé " + paymentId); },
+    onError(e) { alert("Erreur: " + JSON.stringify(e)); }
+  });
+}
