@@ -1,25 +1,41 @@
-<button id="testPiPay">Paiement Pi</button>
-<script src="https://sdk.minepi.com/pi-sdk.js"></script>
-<script>
-document.getElementById('testPiPay').onclick = function () {
-  if (!window.Pi) return alert("Pi SDK non disponible. Utilise le Pi Browser !");
-  Pi.createPayment({
-    amount: 0.01,
-    memo: "Test paiement Pi",
-    metadata: { check: "pi" }
-  }, {
-    onReadyForServerApproval(paymentId) {
-      alert("Paiement en attente (ID): " + paymentId);
-    },
-    onReadyForServerCompletion(paymentId, txid) {
-      alert("Paiement terminé! " + paymentId);
-    },
-    onCancel(paymentId) {
-      alert("Annulé " + paymentId);
-    },
-    onError(e) {
-      alert("Erreur: " + JSON.stringify(e));
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Paiement Pi Test</title>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    // INITIALISATION du SDK !
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.Pi) {
+        Pi.init({ version: "2.0" });
+      }
+    });
+  </script>
+</head>
+<body>
+  <button id="pay-btn">Payer 0.01 Pi</button>
+  <script>
+    document.getElementById('pay-btn').onclick = function () {
+      if (!window.Pi) return alert("Pi SDK non dispo");
+      Pi.createPayment({
+        amount: 0.01,
+        memo: "Test Pi",
+        metadata: { test: true }
+      }, {
+        onReadyForServerApproval(paymentId) {
+          alert("Server approval: " + paymentId);
+        },
+        onReadyForServerCompletion(paymentId, txid) {
+          alert("Terminé! " + paymentId + " / " + txid);
+        },
+        onCancel(paymentId) {
+          alert("Annulé " + paymentId);
+        },
+        onError(e) {
+          alert("Erreur: " + JSON.stringify(e));
+        }
+      });
     }
-  });
-}
-</script>
+  </script>
+</body>
+</html>
