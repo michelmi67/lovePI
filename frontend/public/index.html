@@ -1,36 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Paiement Pi Test - Debug</title>
+  <title>Paiement Pi Test - Debug Final</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <script>
-    alert("JS chargé"); // Étape 1 : Vérifier que le JS est exécuté
+    alert("JS chargé");
 
     document.addEventListener("DOMContentLoaded", function () {
-      alert("DOMContentLoaded"); // Étape 2
+      alert("DOMContentLoaded");
 
       if (!window.Pi) {
-        alert("Pi SDK non dispo"); // Étape 3
+        alert("Pi SDK non dispo");
         return;
       }
-      alert("Pi SDK trouvé !"); // Étape 4
+      alert("Pi SDK trouvé !");
 
       Pi.init({ version: "2.0" });
 
-      Pi.authenticate(['username', 'payments'], {}, function (auth) {
-  alert("Authentifié Pi !");
-  // ... reste du code ...
-});
-setTimeout(() => {
-  alert("Callback Pi.authenticate jamais reçu après 10 secondes !");
-}, 10000);
+      let authTimeout = setTimeout(() => {
+        alert("Callback Pi.authenticate jamais reçu après 15 secondes !");
+      }, 15000);
 
-
+      Pi.authenticate(['username', 'payments'], { sandbox: true }, function (auth) {
+        clearTimeout(authTimeout);
+        alert("Authentifié Pi ! (utilisateur : " + auth.user.username + ")");
         const btn = document.getElementById('pay-btn');
         btn.disabled = false;
 
         btn.onclick = function () {
-          alert("Tentative paiement"); // Étape 6
+          alert("Tentative paiement");
           Pi.createPayment({
             amount: 0.01,
             memo: "Test Pi",
