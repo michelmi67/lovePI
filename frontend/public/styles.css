@@ -1,0 +1,99 @@
+/* ======================================
+   GLOBAL STYLES (Profile, Chat,
+   Explore, Matches)
+   Combined into a single stylesheet
+   ====================================== */
+
+/* Body ------------------------------------------------ */
+body {
+  background-color: #121212;
+  color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  visibility: hidden; /* from matches.css; removed later by JS or override */
+}
+
+/* Container ------------------------------------------------ */
+.container {
+  max-width: 600px; /* 600px (matches) or 500px for other pages */
+  margin: auto;
+  text-align: center; /* center content on explore/matches; override per page if needed */
+}
+
+/* Headings ------------------------------------------------ */
+h2 {
+  color: #00ffaa;
+  text-align: center; /* used in explore & matches */
+}
+
+/* Profile-specific card ------------------------------------------------ */
+.match-card {
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 0 10px #00ffaa44;
+}
+.match-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px; /* circular for matches & square for profile */
+  margin-right: 15px;
+}
+.match-info {
+  flex-grow: 1;
+}
+
+/* Explore page ------------------------------------------------ */
+img {
+  border-radius: 8px;
+  margin: 10px 0;
+  box-shadow: 0 0 10px #00ffaa44;
+}
+.buttons {
+  margin-top: 20px;
+}
+
+/* Chat page ------------------------------------------------ */
+#messages {
+  background: #1e1e1e;
+  padding: 10px;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+/* Form elements (Chat, Profile save) ------------------------------------------------ */
+input,
+button,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #333;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+/* Buttons ------------------------------------------------ */
+button {
+  margin-top: 8px;
+  background-color: #00ffaa;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: auto; /* reset 100% width for chat/button combos */
+}
+button:hover {
+  background-color: #00dd88;
+}
