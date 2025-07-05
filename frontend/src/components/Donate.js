@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Base URL de ton backend
+const API_BASE_URL = "https://lovepi-backend.onrender.com";
+
 function Donate() {
   const sendDonation = async () => {
     try {
@@ -15,7 +18,7 @@ function Donate() {
           });
         },
         onReadyForServerCompletion: paymentId => {
-          fetch("http://localhost:3001/complete_donation", {
+          fetch("API_BASE_UR/complete_donation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ paymentId })
