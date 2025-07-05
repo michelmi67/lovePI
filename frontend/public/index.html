@@ -22,6 +22,23 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <!-- 5) Ton CSS -->
     <link rel="stylesheet" href="styles.css">
+    <button onclick="testPayment()">Test Paiement Pi</button>
+<script>
+function testPayment() {
+  if (!window.Pi) return alert("Pi SDK non dispo");
+  window.Pi.createPayment({
+    amount: 0.01,
+    memo: "Test Pi",
+    metadata: { step: "final" }
+  }, {
+    onReadyForServerApproval(paymentId) { alert("Server approval: " + paymentId); },
+    onReadyForServerCompletion(paymentId, txid) { alert("Terminé! " + paymentId); },
+    onCancel(paymentId) { alert("Annulé " + paymentId); },
+    onError(e) { alert("Erreur: " + JSON.stringify(e)); }
+  });
+}
+</script>
+
   </head>
   <body>
     <h1>Loading LovePi…</h1>
