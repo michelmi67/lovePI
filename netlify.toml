@@ -1,0 +1,7 @@
+# netlify.toml
+
+[build]
+  # Pas de build à exécuter : on sert directement les fichiers statiques
+  command = "echo \"ⓘ no build needed\""
+  # Répertoire à publier
+  publish = "frontend/public"
