@@ -9,6 +9,8 @@
   <body>
     <h1>Loading LovePi…</h1>
     <button onclick="testPayment()">Test Paiement Pi</button>
+     <!-- 6) Point d’entrée applicatif unique -->
+    <script src="app.js"></script>
     <script>
 function testPayment() {
   if (!window.Pi) return alert("Pi SDK non dispo");
@@ -23,7 +25,5 @@ function testPayment() {
     onError(e) { alert("Erreur: " + JSON.stringify(e)); }
   });
 }
-     <!-- 6) Point d’entrée applicatif unique -->
-    <script src="app.js"></script>
   </body>
 </html>
