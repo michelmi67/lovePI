@@ -1,15 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Paiement Pi Test</title>
+  <title>Paiement Pi Test - Debug</title>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <script>
+    alert("JS chargé"); // Étape 1 : Vérifier que le JS est exécuté
+
     document.addEventListener("DOMContentLoaded", function () {
-      if (!window.Pi) return alert("Pi SDK non dispo");
+      alert("DOMContentLoaded"); // Étape 2
+
+      if (!window.Pi) {
+        alert("Pi SDK non dispo"); // Étape 3
+        return;
+      }
+      alert("Pi SDK trouvé !"); // Étape 4
+
       Pi.init({ version: "2.0" });
+
       Pi.authenticate(['username', 'payments'], {}, function (auth) {
-        document.getElementById('pay-btn').disabled = false;
-        document.getElementById('pay-btn').onclick = function () {
+        alert("Authentifié Pi !"); // Étape 5
+
+        const btn = document.getElementById('pay-btn');
+        btn.disabled = false;
+
+        btn.onclick = function () {
+          alert("Tentative paiement"); // Étape 6
           Pi.createPayment({
             amount: 0.01,
             memo: "Test Pi",
@@ -17,7 +32,6 @@
           }, {
             onReadyForServerApproval(paymentId) {
               alert("En attente validation serveur : " + paymentId);
-              // En dev, tu n'as pas besoin de backend ici.
             },
             onReadyForServerCompletion(paymentId, txid) {
               alert("Paiement terminé ! " + paymentId + " / tx: " + txid);
@@ -29,7 +43,7 @@
               alert("Erreur: " + JSON.stringify(e));
             }
           });
-        }
+        };
       });
     });
   </script>
