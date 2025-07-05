@@ -2,13 +2,14 @@
 // Single master script for all pages (index, profile, explore, matches, chat)
 
 ///////////////////////////////////////////
-// CONFIGURATION
+// CONFIGURATION & INIT SDK (sandbox)
 ///////////////////////////////////////////
-window.__PI_SANDBOX__ = true;
-window.__ENV = {
-  backendURL: "https://lovepi-backend.onrender.com"
-};
-const API_BASE_URL = window.__ENV.backendURL;
+  // Marque qu’on a déjà initialisé pour ne pas le refaire
+  window._lovepi_sdk_initialized = true;
+}
+
+// Base URL de ton backend
+const API_BASE_URL = "https://lovepi-backend.onrender.com";
 
 ///////////////////////////////////////////
 // GLOBAL STATE
@@ -22,14 +23,14 @@ let socket = null;
 // BOOTSTRAP: Authenticate & route
 ///////////////////////////////////////////
 window.addEventListener("load", () => {
-  // Ensure Pi Browser SDK is available
+  // Vérifie qu’on est bien dans Pi Browser
   if (!window.Pi) {
     alert("⚠️ Veuillez ouvrir cette page dans Pi Browser.");
     return;
   }
 
-  // Authenticate automatically in sandbox
-  window.Pi.authenticate(
+  // Authenticate automatiquement en sandbox
+  Pi.authenticate(
     ['username'],
     { sandbox: true },
     async auth => {
@@ -68,7 +69,10 @@ async function handleIndexPage() {
     }
   } catch (e) {
     console.error("Backend error:", e);
-    document.body.innerHTML += "<p style='color:red;'>Erreur de connexion au backend.</p>";
+    document.body.insertAdjacentHTML(
+      'beforeend',
+      `<p style="color:red;">Erreur de connexion au backend.</p>`
+    );
   }
 }
 
@@ -80,6 +84,7 @@ function initProfilePage() {
   const photoInput = document.getElementById("photoInput");
   const previewImg = document.getElementById("preview");
 
+  // Preview photo
   photoInput.addEventListener("change", function () {
     const file = this.files[0];
     if (!file) return;
@@ -96,9 +101,9 @@ function initProfilePage() {
   fetch(`${API_BASE_URL}/api/profile/${currentUser}`)
     .then(r => r.json())
     .then(data => {
-      document.getElementById("age").value = data.age || "";
+      document.getElementById("age").value    = data.age    || "";
       document.getElementById("gender").value = data.gender || "";
-      document.getElementById("bio").value = data.bio || "";
+      document.getElementById("bio").value    = data.bio    || "";
       if (data.photo) {
         previewImg.src = data.photo;
         previewImg.style.display = "block";
@@ -106,11 +111,12 @@ function initProfilePage() {
       }
     });
 
+  // Save button
   document.getElementById("saveProfileBtn").addEventListener("click", async () => {
-    const age = document.getElementById("age").value;
+    const age    = document.getElementById("age").value;
     const gender = document.getElementById("gender").value;
-    const bio = document.getElementById("bio").value;
-    const photo = window.base64Photo || "";
+    const bio    = document.getElementById("bio").value;
+    const photo  = window.base64Photo || "";
 
     const res = await fetch(`${API_BASE_URL}/api/save_profile`, {
       method: "POST",
@@ -131,10 +137,11 @@ function initProfilePage() {
 ///////////////////////////////////////////
 async function initExplorePage() {
   const resAll = await fetch(`${API_BASE_URL}/api/all_profiles`);
-  const all = await resAll.json();
+  const all    = await resAll.json();
   otherProfiles = Object.entries(all)
     .filter(([u]) => u !== currentUser)
     .map(([u, d]) => ({ username: u, ...d }));
+
   const btnContainer = document.querySelector(".buttons");
   btnContainer.innerHTML = `
     <button id="likeBtn">❤️ Like</button>
@@ -142,10 +149,11 @@ async function initExplorePage() {
     <button id="matchesBtn">💘 My Matches</button>
     <button id="chatsBtn">💬 My Chats</button>
   `;
-  document.getElementById("likeBtn").onclick = likeProfile;
-  document.getElementById("skipBtn").onclick = skipProfile;
+  document.getElementById("likeBtn").onclick    = likeProfile;
+  document.getElementById("skipBtn").onclick    = skipProfile;
   document.getElementById("matchesBtn").onclick = () => window.location.href = "matches.html";
-  document.getElementById("chatsBtn").onclick = () => window.location.href = "chat-list.html";
+  document.getElementById("chatsBtn").onclick   = () => window.location.href = "chat-list.html";
+
   showNextProfile();
 }
 
@@ -156,9 +164,9 @@ function showNextProfile() {
   }
   const p = otherProfiles[currentIndex];
   document.getElementById("username").textContent = p.username;
-  document.getElementById("age").textContent = p.age || "N/A";
-  document.getElementById("gender").textContent = p.gender || "N/A";
-  document.getElementById("bio").textContent = p.bio || "N/A";
+  document.getElementById("age").textContent      = p.age    || "N/A";
+  document.getElementById("gender").textContent   = p.gender || "N/A";
+  document.getElementById("bio").textContent      = p.bio    || "N/A";
   const photoEl = document.getElementById("photo");
   if (p.photo) {
     photoEl.src = p.photo;
@@ -193,14 +201,16 @@ function skipProfile() {
 // MATCHES PAGE
 ///////////////////////////////////////////
 async function initMatchesPage() {
-  const res = await fetch(`${API_BASE_URL}/api/matches/${currentUser}`);
+  const res     = await fetch(`${API_BASE_URL}/api/matches/${currentUser}`);
   const matches = await res.json();
   const listDiv = document.getElementById("matches-list");
   listDiv.innerHTML = "";
+
   if (!matches.length) {
     listDiv.innerHTML = "<p>Vous n'avez pas encore de matchs.</p>";
     return;
   }
+
   matches.forEach(u => {
     const card = document.createElement("div");
     card.className = "match-card";
@@ -218,10 +228,13 @@ async function initMatchesPage() {
 // CHAT PAGE (Socket.IO)
 ///////////////////////////////////////////
 function initChatPage() {
+  // Socket.IO vers ton backend
   socket = io(API_BASE_URL);
+
   const params = new URLSearchParams(window.location.search);
   const target = params.get("with");
   document.getElementById("chatWith").textContent = target;
+
   socket.emit("join", { username: currentUser });
 
   socket.on("private_message", ({ from, text }) => {
@@ -233,7 +246,7 @@ function initChatPage() {
 
   document.getElementById("sendBtn").onclick = () => {
     const input = document.getElementById("msgInput");
-    const text = input.value.trim();
+    const text  = input.value.trim();
     if (!text) return;
     socket.emit("private_message", { from: currentUser, to: target, text });
     const div = document.createElement("div");
