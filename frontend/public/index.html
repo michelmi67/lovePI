@@ -8,7 +8,7 @@
       if (!window.Pi) return alert("Pi SDK non dispo");
       Pi.init({ version: "2.0" });
       Pi.authenticate(['username', 'payments'], {}, function (auth) {
-        // Authentifié avec le scope "payments"
+        document.getElementById('pay-btn').disabled = false;
         document.getElementById('pay-btn').onclick = function () {
           Pi.createPayment({
             amount: 0.01,
@@ -16,13 +16,14 @@
             metadata: { test: true }
           }, {
             onReadyForServerApproval(paymentId) {
-              alert("Server approval: " + paymentId);
+              alert("En attente validation serveur : " + paymentId);
+              // En dev, tu n'as pas besoin de backend ici.
             },
             onReadyForServerCompletion(paymentId, txid) {
-              alert("Terminé! " + paymentId + " / " + txid);
+              alert("Paiement terminé ! " + paymentId + " / tx: " + txid);
             },
             onCancel(paymentId) {
-              alert("Annulé " + paymentId);
+              alert("Paiement annulé : " + paymentId);
             },
             onError(e) {
               alert("Erreur: " + JSON.stringify(e));
@@ -34,6 +35,6 @@
   </script>
 </head>
 <body>
-  <button id="pay-btn">Payer 0.01 Pi</button>
+  <button id="pay-btn" disabled>Payer 0.01 Pi</button>
 </body>
 </html>
