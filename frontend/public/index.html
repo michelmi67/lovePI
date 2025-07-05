@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>LovePi</title> <!-- 1) Active le sandbox et configure le backend -->
+  </head>
+  <body>
+    <h1>Loading LovePi…</h1>
     <button onclick="testPayment()">Test Paiement Pi</button>
-<script>
+    <script>
 function testPayment() {
   if (!window.Pi) return alert("Pi SDK non dispo");
   window.Pi.createPayment({
@@ -18,11 +21,6 @@ function testPayment() {
     onError(e) { alert("Erreur: " + JSON.stringify(e)); }
   });
 }
-</script>
-
-  </head>
-  <body>
-    <h1>Loading LovePi…</h1>
      <!-- 6) Point d’entrée applicatif unique -->
     <script src="app.js"></script>
   </body>
