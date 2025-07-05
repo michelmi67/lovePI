@@ -1,16 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta charset="utf-8">
-    <title>LovePi</title> <!-- 1) Active le sandbox et configure le backend -->
-    <!-- 2) Charge le Pi SDK -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-  </head>
-  <body>
-    <h1>Loading LovePi…</h1>
-    <button onclick="testPayment()">Test Paiement Pi</button>
-     <!-- 6) Point d’entrée applicatif unique -->
-    <script src="app.js"></script>
-  </body>
-</html>
+<button id="testPiPay">Paiement Pi</button>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<script>
+document.getElementById('testPiPay').onclick = function () {
+  if (!window.Pi) return alert("Pi SDK non disponible. Utilise le Pi Browser !");
+  Pi.createPayment({
+    amount: 0.01,
+    memo: "Test paiement Pi",
+    metadata: { check: "pi" }
+  }, {
+    onReadyForServerApproval(paymentId) {
+      alert("Paiement en attente (ID): " + paymentId);
+    },
+    onReadyForServerCompletion(paymentId, txid) {
+      alert("Paiement terminé! " + paymentId);
+    },
+    onCancel(paymentId) {
+      alert("Annulé " + paymentId);
+    },
+    onError(e) {
+      alert("Erreur: " + JSON.stringify(e));
+    }
+  });
+}
+</script>
