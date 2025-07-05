@@ -18,7 +18,13 @@
       Pi.init({ version: "2.0" });
 
       Pi.authenticate(['username', 'payments'], {}, function (auth) {
-        alert("Authentifié Pi !"); // Étape 5
+  alert("Authentifié Pi !");
+  // ... reste du code ...
+});
+setTimeout(() => {
+  alert("Callback Pi.authenticate jamais reçu après 10 secondes !");
+}, 10000);
+
 
         const btn = document.getElementById('pay-btn');
         btn.disabled = false;
