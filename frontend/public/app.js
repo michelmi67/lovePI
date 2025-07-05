@@ -6,7 +6,7 @@
 ///////////////////////////////////////////
   // Marque qu’on a déjà initialisé pour ne pas le refaire
   window._lovepi_sdk_initialized = true;
-}
+
 
 // Base URL de ton backend
 const API_BASE_URL = "https://lovepi-backend.onrender.com";
