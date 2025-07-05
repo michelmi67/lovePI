@@ -11,19 +11,5 @@
     <button onclick="testPayment()">Test Paiement Pi</button>
      <!-- 6) Point d’entrée applicatif unique -->
     <script src="app.js"></script>
-    <script>
-function testPayment() {
-  if (!window.Pi) return alert("Pi SDK non dispo");
-  window.Pi.createPayment({
-    amount: 0.01,
-    memo: "Test Pi",
-    metadata: { step: "final" }
-  }, {
-    onReadyForServerApproval(paymentId) { alert("Server approval: " + paymentId); },
-    onReadyForServerCompletion(paymentId, txid) { alert("Terminé! " + paymentId); },
-    onCancel(paymentId) { alert("Annulé " + paymentId); },
-    onError(e) { alert("Erreur: " + JSON.stringify(e)); }
-  });
-}
   </body>
 </html>
